@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>기술가정 - 시리얼 속 철분 찾기 실험</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="intro-overlay">
+        <div id="intro-card">
+            <h2>🤔 시리얼에 왜 '쇠'가 들어있을까?</h2>
+            <div class="story-content">
+                <p>여러분, 깜짝 놀라지 마세요! 우리가 먹는 시리얼 안에는 자석에 붙는 <strong>'진짜 철분'</strong>이 들어있기도 하답니다.</p>
+                <div class="story-item">
+                    <span>🚚</span>
+                    <p>철분은 우리 몸속 피에서 <strong>산소를 배달하는 '슈퍼 택시'</strong>예요!</p>
+                </div>
+                <div class="story-item">
+                    <span>💪</span>
+                    <p>우리가 쑥쑥 자라고 튼튼해지도록 시리얼에 일부러 넣어준 거랍니다.</p>
+                </div>
+            </div>
+            <p class="story-question">정말로 시리얼 속에 숨어있는 철분을 찾으러 가볼까요?</p>
+            <button id="btn-start-exp" class="primary-btn">네, 좋아요! 출발!</button>
+        </div>
+    </div>
+
+    <div id="app" class="hidden">
+        <header>
+            <h1>🔬 시리얼 속 철분 찾기 실험</h1>
+            <p>시리얼을 부수고 물에 섞어 자석으로 철분을 추출해봅시다!</p>
+        </header>
+
+        <main>
+            <div id="experiment-area">
+                <div id="status-bar">
+                    단계: <span id="current-step">시리얼 선택</span>
+                </div>
+                
+                <div id="canvas-container">
+                    <canvas id="experiment-canvas"></canvas>
+                    <div id="magnet" class="hidden">🧲</div>
+                </div>
+
+                <div id="controls">
+                    <button id="btn-next" class="primary-btn">시작하기</button>
+                    <button id="btn-reset" class="secondary-btn">다시 하기</button>
+                </div>
+            </div>
+
+            <div id="info-panel">
+                <div class="panel-section">
+                    <h3>📋 실험 가이드</h3>
+                    <p id="guide-text">아래 '시작하기' 버튼을 눌러 실험을 시작하세요.</p>
+                </div>
+                
+                <div id="info-box" class="hidden">
+                    <div class="result-card">
+                        <h4>🎓 실험 결과 리포트</h4>
+                        <div id="result-content">
+                            <p><strong>발견한 사실:</strong> 시리얼에는 진짜 자석에 붙는 철 가루가 들어있어요!</p>
+                            <p><strong>왜 들어있나요?</strong> 우리 몸의 피 속에서 산소를 배달하는 '철분'을 보충해주기 위해서예요.</p>
+                            <p><strong>영양 강화 식품:</strong> 이렇게 영양소를 추가한 음식을 '영양 강화 식품'이라고 부른답니다.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
