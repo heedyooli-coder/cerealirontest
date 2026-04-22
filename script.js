@@ -45,16 +45,18 @@ function resizeCanvas() {
     const container = canvas.parentElement;
     if (!container) return;
     
-    // 캔버스 크기 업데이트
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
     
-    // 모바일/PC에 따른 보울 위치 최적화
     if (window.innerWidth <= 768) {
-        bowl.x = canvas.width / 2;
-        bowl.y = canvas.height * 0.65; 
-        bowl.radius = Math.min(canvas.width, canvas.height) * 0.38;
+        // 모바일: 게이지 공간(왼쪽)을 확보하기 위해 보울을 오른쪽으로 배치
+        bowl.x = canvas.width * 0.62; 
+        bowl.y = canvas.height * 0.58; 
+        // 화면 밖으로 나가지 않도록 반지름 제한 (왼쪽 게이지 영역 60px 제외 및 우측 여백 고려)
+        const safeRadius = Math.min(bowl.x - 65, canvas.width - bowl.x - 15, canvas.height - bowl.y - 30);
+        bowl.radius = Math.min(safeRadius, Math.min(canvas.width, canvas.height) * 0.38);
     } else {
+        // PC
         bowl.x = canvas.width / 2 + 60;
         bowl.y = canvas.height / 2 + 25;
         bowl.radius = Math.min(canvas.width, canvas.height) * 0.35;
