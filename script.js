@@ -1,3 +1,4 @@
+// Vercel 배포 재시도를 위한 주석 추가
 const canvas = document.getElementById('experiment-canvas');
 const ctx = canvas.getContext('2d');
 const btnNext = document.getElementById('btn-next');
