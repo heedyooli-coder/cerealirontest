@@ -43,12 +43,22 @@ btnStartExp.onclick = function() {
 function resizeCanvas() {
     const container = canvas.parentElement;
     if (!container) return;
+    
+    // 캔버스 크기 업데이트
     canvas.width = container.clientWidth;
     canvas.height = container.clientHeight;
-    bowl.x = canvas.width / 2 + 60; 
+    
+    // 모바일/PC에 따른 보울 위치 최적화
+    if (window.innerWidth <= 768) {
+        bowl.x = canvas.width / 2;
+        bowl.y = canvas.height / 2 + 20;
+        bowl.radius = Math.min(canvas.width, canvas.height) * 0.42;
+    } else {
+        bowl.x = canvas.width / 2 + 60;
+        bowl.y = canvas.height / 2 + 25;
+        bowl.radius = Math.min(canvas.width, canvas.height) * 0.35;
+    }
     bowlTargetX = bowl.x;
-    bowl.y = canvas.height / 2 + 25; 
-    bowl.radius = Math.min(canvas.width, canvas.height) * 0.35;
 }
 window.addEventListener('resize', resizeCanvas);
 
@@ -289,31 +299,75 @@ function update() {
     requestAnimationFrame(update);
 }
 
-canvas.addEventListener('mousemove', (e) => {
+function handleInputMove(e) {
     const rect = canvas.getBoundingClientRect();
-    mouseX = e.clientX - rect.left; mouseY = e.clientY - rect.top;
-    if (step === 'EXTRACT') { magnet.style.left = `${mouseX}px`; magnet.style.top = `${mouseY}px`; }
-});
+    let clientX, clientY;
+    
+    if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+        // 터치 시 스크롤 방지
+        if (step === 'CRUSH' || step === 'MIX' || step === 'EXTRACT') {
+            e.preventDefault();
+        }
+    } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+    }
+    
+    mouseX = clientX - rect.left;
+    mouseY = clientY - rect.top;
+    
+    if (step === 'EXTRACT') {
+        magnet.style.left = `${mouseX}px`;
+        magnet.style.top = `${mouseY}px`;
+    }
+}
 
-canvas.addEventListener('mousedown', () => {
+function handleInputDown(e) {
     isMouseDown = true;
+    handleInputMove(e); // 좌표 업데이트
+
     if (step === 'CRUSH') {
-        const newParts = []; let hitAny = false;
+        const newParts = [];
+        let hitAny = false;
         for (let i = particles.length - 1; i >= 0; i--) {
-            const p = particles[i]; const dx = mouseX - p.x; const dy = mouseY - p.y;
+            const p = particles[i];
+            const dx = mouseX - p.x;
+            const dy = mouseY - p.y;
             if (Math.sqrt(dx * dx + dy * dy) < 50 && p.size > 2) {
                 hitAny = true;
-                for(let j=0; j<3; j++) newParts.push(new Particle(p.x + (Math.random()-0.5)*15, p.y + (Math.random()-0.5)*15, p.size*0.55, 'cereal', p.snackType));
+                for (let j = 0; j < 3; j++) {
+                    newParts.push(new Particle(p.x + (Math.random() - 0.5) * 15, p.y + (Math.random() - 0.5) * 15, p.size * 0.55, 'cereal', p.snackType));
+                }
                 if (Math.random() > 0.95) effects.push(new EffectParticle(p.x, p.y, p.color, 'dust'));
                 particles.splice(i, 1);
             }
         }
-        if (hitAny) { crushCount++; pestleScale = 0.8; gaugeBounce = 2.0; if (crushCount === CRUSH_GOAL) { for(let i=0; i<100; i++) effects.push(new EffectParticle(canvas.width/2, canvas.height/2, `hsl(${Math.random()*360}, 100%, 60%)`, 'confetti')); } }
+        if (hitAny) {
+            crushCount++;
+            pestleScale = 0.8;
+            gaugeBounce = 2.0;
+            if (crushCount === CRUSH_GOAL) {
+                for (let i = 0; i < 100; i++) effects.push(new EffectParticle(canvas.width / 2, canvas.height / 2, `hsl(${Math.random() * 360}, 100%, 60%)`, 'confetti'));
+            }
+        }
         particles.push(...newParts);
     }
-});
+}
 
-canvas.addEventListener('mouseup', () => { isMouseDown = false; });
+function handleInputUp() {
+    isMouseDown = false;
+}
+
+canvas.addEventListener('mousemove', handleInputMove);
+canvas.addEventListener('mousedown', handleInputDown);
+canvas.addEventListener('mouseup', handleInputUp);
+
+// 터치 이벤트 추가
+canvas.addEventListener('touchmove', handleInputMove, { passive: false });
+canvas.addEventListener('touchstart', handleInputDown, { passive: false });
+canvas.addEventListener('touchend', handleInputUp, { passive: false });
 
 btnNext.addEventListener('click', () => {
     if (step === 'CRUSH') {
