@@ -52,8 +52,8 @@ function resizeCanvas() {
     // 모바일/PC에 따른 보울 위치 최적화
     if (window.innerWidth <= 768) {
         bowl.x = canvas.width / 2;
-        bowl.y = canvas.height / 2 + 20;
-        bowl.radius = Math.min(canvas.width, canvas.height) * 0.42;
+        bowl.y = canvas.height * 0.65; 
+        bowl.radius = Math.min(canvas.width, canvas.height) * 0.38;
     } else {
         bowl.x = canvas.width / 2 + 60;
         bowl.y = canvas.height / 2 + 25;
@@ -197,9 +197,19 @@ function initExperiment() {
 
 function drawSuccessMessage(msg1, msg2) {
     ctx.save();
-    const bx = canvas.width / 2 + 40; const by = 35;
-    ctx.fillStyle = '#2e7d32'; ctx.textAlign = 'center'; ctx.font = 'bold 24px Pretendard'; ctx.fillText(msg1, bx, by);
-    if (msg2) { ctx.font = 'bold 18px Pretendard'; ctx.fillText(msg2, bx, by + 30); }
+    const isMobile = window.innerWidth <= 768;
+    const bx = isMobile ? canvas.width / 2 : canvas.width / 2 + 40;
+    const by = isMobile ? 25 : 35;
+    
+    ctx.fillStyle = '#2e7d32'; 
+    ctx.textAlign = 'center'; 
+    ctx.font = isMobile ? 'bold 20px Pretendard' : 'bold 24px Pretendard'; 
+    ctx.fillText(msg1, bx, by);
+    
+    if (msg2) { 
+        ctx.font = isMobile ? 'bold 15px Pretendard' : 'bold 18px Pretendard'; 
+        ctx.fillText(msg2, bx, by + (isMobile ? 25 : 30)); 
+    }
     ctx.restore();
 }
 
@@ -282,14 +292,40 @@ function update() {
         const progress = Math.min(crushCount / CRUSH_GOAL, 1);
         gaugeBounce += (0 - gaugeBounce) * 0.15;
         ctx.save();
-        const gx = 30, gy = 60, gw = 40, gh = 280;
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'; ctx.fillRect(gx - 10, gy - 40, gw + 20, gh + 60); 
-        ctx.font = '24px Arial'; ctx.textAlign = 'center'; ctx.fillText('💪', gx + gw/2, gy - 10 - Math.abs(gaugeBounce) * 2);
-        ctx.fillStyle = '#f5f5f5'; ctx.fillRect(gx, gy, gw, gh);
-        const grad = ctx.createLinearGradient(0, gy + gh, 0, gy); grad.addColorStop(0, '#ff9800'); grad.addColorStop(1, '#ffeb3b');
-        ctx.fillStyle = grad; const fillH = gh * progress; ctx.fillRect(gx, gy + (gh - fillH) - (gaugeBounce * 5), gw, fillH + (gaugeBounce * 5));
-        ctx.fillStyle = '#555'; ctx.font = 'bold 14px Pretendard'; ctx.fillText(`${Math.floor(progress * 100)}%`, gx + gw/2, gy + gh + 15);
-        if (progress >= 1) { drawSuccessMessage('✨ 미션 완료! ✨', '이제 물을 부어볼까요?'); btnNext.disabled = false; }
+        
+        // 모바일과 PC의 게이지 위치/크기 분기
+        const isMobile = window.innerWidth <= 768;
+        const gx = isMobile ? 15 : 30;
+        const gy = isMobile ? 80 : 60;
+        const gw = isMobile ? 30 : 40;
+        const gh = isMobile ? 180 : 280;
+        
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)'; 
+        ctx.fillRect(gx - 5, gy - 40, gw + 10, gh + 60); 
+        
+        ctx.font = isMobile ? '20px Arial' : '24px Arial'; 
+        ctx.textAlign = 'center'; 
+        ctx.fillText('💪', gx + gw/2, gy - 10 - Math.abs(gaugeBounce) * 2);
+        
+        ctx.fillStyle = '#f5f5f5'; 
+        ctx.fillRect(gx, gy, gw, gh);
+        
+        const grad = ctx.createLinearGradient(0, gy + gh, 0, gy); 
+        grad.addColorStop(0, '#ff9800'); 
+        grad.addColorStop(1, '#ffeb3b');
+        
+        ctx.fillStyle = grad; 
+        const fillH = gh * progress; 
+        ctx.fillRect(gx, gy + (gh - fillH) - (gaugeBounce * 5), gw, fillH + (gaugeBounce * 5));
+        
+        ctx.fillStyle = '#555'; 
+        ctx.font = isMobile ? 'bold 12px Pretendard' : 'bold 14px Pretendard'; 
+        ctx.fillText(`${Math.floor(progress * 100)}%`, gx + gw/2, gy + gh + 15);
+        
+        if (progress >= 1) { 
+            drawSuccessMessage('✨ 미션 완료! ✨', '이제 물을 부어볼까요?'); 
+            btnNext.disabled = false; 
+        }
         ctx.restore();
         pestleScale += (1.0 - pestleScale) * 0.2;
         ctx.save(); ctx.translate(mouseX, mouseY); ctx.scale(pestleScale, pestleScale);
